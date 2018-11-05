@@ -6,8 +6,8 @@ services:
     ports:
       - 8888:8888
     volumes:
-      - ./src:/notebooks/Sources
+      - ./notebook:/notebooks/Sources
     env_file:
-      - web-variables.env
+      - variables.env
 
     
