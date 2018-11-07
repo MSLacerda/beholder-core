@@ -52,7 +52,9 @@ def train(csv_file):
     X_train, X_test = X_processed[0:train_size], X_processed[train_size:len(X_processed)]
     Y_train, Y_test = Y[0:train_size], Y[train_size:len(Y)]
 
-    tb_callback = TensorBoard(log_dir='./logs', embeddings_freq=1)
+    # Bug
+    # 
+    # tb_callback = TensorBoard(log_dir='./logs', embeddings_freq=1, embeddings_data = numpy.array(X))
 
     model = Sequential()
     model.add(Embedding(num_words, 32, input_length=max_log_length))
