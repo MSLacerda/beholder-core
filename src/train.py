@@ -52,7 +52,9 @@ def train(csv_file):
     X_train, X_test = X_processed[0:train_size], X_processed[train_size:len(X_processed)]
     Y_train, Y_test = Y[0:train_size], Y[train_size:len(Y)]
 
-    tb_callback = TensorBoard(log_dir='./logs', embeddings_freq=1)
+    # Bug
+    # 
+    # tb_callback = TensorBoard(log_dir='./logs', embeddings_freq=1, embeddings_data = numpy.array(X))
 
     model = Sequential()
     model.add(Embedding(num_words, 32, input_length=max_log_length))
@@ -62,7 +64,7 @@ def train(csv_file):
     model.add(Dense(1, activation='sigmoid'))
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
     print(model.summary())
-    model.fit(X_train, Y_train, validation_split=0.25, epochs=3, batch_size=128, callbacks=[tb_callback])
+    model.fit(X_train, Y_train, validation_split=0.25, epochs=3, batch_size=128)
 
     # Evaluate model
     score, acc = model.evaluate(X_test, Y_test, verbose=1, batch_size=128)

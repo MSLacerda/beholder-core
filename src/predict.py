@@ -31,11 +31,14 @@ def predict(csv_file, log_entry):
     max_log_length = 1024
     log_entry_processed = sequence.pad_sequences(seq, maxlen=max_log_length)
 
+    print(seq)
+    print(log_entry_processed)
+
     model = load_model('securitai-lstm-model.h5')
     model.load_weights('securitai-lstm-weights.h5')
     model.compile(loss = 'binary_crossentropy', optimizer = 'adam', metrics = ['accuracy'])
     prediction = model.predict(log_entry_processed)
-    print prediction[0]
+    print prediction
 
 if __name__ == '__main__':
     parser = optparse.OptionParser()

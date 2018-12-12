@@ -7,6 +7,7 @@ services:
       - 8888:8888
     volumes:
       - ./notebook:/notebooks/Sources
+      - ./src:/code
     env_file:
       - variables.env
 
