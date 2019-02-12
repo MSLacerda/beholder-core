@@ -15,8 +15,9 @@ You are located at: <b>Core Module<b>
 
 ## Requirements
 
- * Docker
- * Docker Compose
+ * Python
+ * Tensorflow
+ * Keras
 
 <hr />
 
