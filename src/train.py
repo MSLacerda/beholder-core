@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 import os
 import json
@@ -11,17 +12,17 @@ from keras.layers.embeddings import Embedding
 from keras.preprocessing import sequence
 from keras.preprocessing.text import Tokenizer
 from collections import OrderedDict
+import matplotlib.pyplot as plt
+
 
 def train(csv_file):
     dataframe = pandas.read_csv(csv_file, engine='python', quotechar='|', header=None)
     dataset = dataframe.sample(frac=1).values
 
-    # Preprocess dataset
     X = dataset[:,0]
     Y = dataset[:,1]
 
     for index, item in enumerate(X):
-        # Quick hack to space out json elements
         reqJson = json.loads(item, object_pairs_hook=OrderedDict)
         del reqJson['timestamp']
         del reqJson['headers']
@@ -30,8 +31,12 @@ def train(csv_file):
         del reqJson['responsePayload']
         X[index] = json.dumps(reqJson, separators=(',', ':'))
 
+
     tokenizer = Tokenizer(filters='\t\n', char_level=True)
     tokenizer.fit_on_texts(X)
+
+    print tokenizer.word_index
+    print len(tokenizer.word_index)
 
     # Extract and save word dictionary
     word_dict_file = 'build/word-dictionary.json'
@@ -45,16 +50,14 @@ def train(csv_file):
     num_words = len(tokenizer.word_index)+1
     X = tokenizer.texts_to_sequences(X)
 
+    # print X
+
     max_log_length = 1024
     train_size = int(len(dataset) * .75)
 
     X_processed = sequence.pad_sequences(X, maxlen=max_log_length)
     X_train, X_test = X_processed[0:train_size], X_processed[train_size:len(X_processed)]
     Y_train, Y_test = Y[0:train_size], Y[train_size:len(Y)]
-
-    # Bug
-    # 
-    # tb_callback = TensorBoard(log_dir='./logs', embeddings_freq=1, embeddings_data = numpy.array(X))
 
     model = Sequential()
     model.add(Embedding(num_words, 32, input_length=max_log_length))
@@ -63,8 +66,8 @@ def train(csv_file):
     model.add(Dropout(0.5))
     model.add(Dense(1, activation='sigmoid'))
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-    print(model.summary())
-    model.fit(X_train, Y_train, validation_split=0.25, epochs=3, batch_size=128)
+    
+    history = model.fit(X_train, Y_train, validation_split=0.25, epochs=3, batch_size=128)
 
     # Evaluate model
     score, acc = model.evaluate(X_test, Y_test, verbose=1, batch_size=128)
@@ -76,6 +79,14 @@ def train(csv_file):
     model.save('securitai-lstm-model.h5')
     with open('securitai-lstm-model.json', 'w') as outfile:
         outfile.write(model.to_json())
+
+    plt.plot(history.history['acc'])
+    plt.plot(history.history['val_acc'])
+    plt.title(u'Acurácia do modelo')
+    plt.ylabel(u'Acurácia')
+    plt.xlabel(u'Época')
+    plt.legend(['Dataset Treinamento', 'Dataset Teste'], loc='upper left')
+    plt.show()
 
 if __name__ == '__main__':
     parser = optparse.OptionParser()
