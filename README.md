@@ -15,9 +15,11 @@ You are located at: <b>Core Module<b>
 
 ## Requirements
 
- * Python
- * Tensorflow
- * Keras
+* tensorflow
+* keras
+* pandas
+* matplotlib
+
 
 <hr />
 

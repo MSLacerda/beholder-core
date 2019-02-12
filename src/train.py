@@ -35,9 +35,6 @@ def train(csv_file):
     tokenizer = Tokenizer(filters='\t\n', char_level=True)
     tokenizer.fit_on_texts(X)
 
-    print tokenizer.word_index
-    print len(tokenizer.word_index)
-
     # Extract and save word dictionary
     word_dict_file = 'build/word-dictionary.json'
 
@@ -49,9 +46,7 @@ def train(csv_file):
 
     num_words = len(tokenizer.word_index)+1
     X = tokenizer.texts_to_sequences(X)
-
-    # print X
-
+    
     max_log_length = 1024
     train_size = int(len(dataset) * .75)
 
